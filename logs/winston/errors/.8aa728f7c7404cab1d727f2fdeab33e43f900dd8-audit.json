@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\projects\\rent-car\\logs\\winston\\errors\\.8aa728f7c7404cab1d727f2fdeab33e43f900dd8-audit.json",
+    "files": [
+        {
+            "date": 1744449236156,
+            "name": "C:\\projects\\rent-car\\logs\\winston\\errors\\car-2025-12-04-15-error.log",
+            "hash": "ccb0220a4de83cd570e8334122fd3cc144acca3ae5c0f70f735ede9bca90ba06"
+        }
+    ],
+    "hashType": "sha256"
+}
