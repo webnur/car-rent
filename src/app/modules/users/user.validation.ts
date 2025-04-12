@@ -7,36 +7,19 @@ const createUserZodSchema = z.object({
         required_error: "Role is required",
       })
       .default("user"),
-    firstName: z.string({
+    fullName: z.string({
       required_error: "First name is required",
-    }),
-    lastName: z.string({
-      required_error: "Last name is required",
     }),
     email: z
       .string({
         required_error: "Email is required",
       })
       .email("Invalid email format"),
-    phone: z.string({
-      required_error: "Phone number is required",
-    }),
-    addressLine1: z.string({
-      required_error: "Address line 1 is required",
-    }),
-    addressLine2: z.string().optional(),
-    zipCode: z.string({
-      required_error: "Zip code is required",
-    }),
-    city: z.string({
-      required_error: "City is required",
-    }),
-    state: z.string({
-      required_error: "State is required",
-    }),
-    country: z.string({
-      required_error: "Country is required",
-    }),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+    zipCode: z.string().optional(),
+    city: z.string().optional(),
+    country: z.string().optional(),
     password: z
       .string({
         required_error: "Password is required",

@@ -21,23 +21,23 @@ const UserSchema = new Schema<IUser, UserModel>(
     },
     phone: {
       type: String,
-      required: true,
+      default: "",
     },
     address: {
       type: String,
-      required: true,
+      default: "",
     },
     zipCode: {
       type: String,
-      required: true,
+      default: "",
     },
     city: {
       type: String,
-      required: true,
+      default: "",
     },
     country: {
       type: String,
-      required: true,
+      default: "",
     },
     password: {
       type: String,
