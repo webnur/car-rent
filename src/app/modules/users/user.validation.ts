@@ -31,15 +31,12 @@ const createUserZodSchema = z.object({
 
 const updateUserZodSchema = z.object({
   body: z.object({
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
+    fullName: z.string().optional(),
     email: z.string().email("Invalid email format").optional(),
     phone: z.string().optional(),
-    addressLine1: z.string().optional(),
-    addressLine2: z.string().optional(),
+    address: z.string().optional(),
     zipCode: z.string().optional(),
     city: z.string().optional(),
-    state: z.string().optional(),
     country: z.string().optional(),
     password: z
       .string()
