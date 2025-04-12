@@ -2,18 +2,15 @@ import { Model, Types } from "mongoose";
 
 export type IUser = {
   role: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   phone: string;
-  addressLine1: string;
-  addressLine2: string;
+  address: string;
   zipCode: string;
   city: string;
-  state: string;
   country: string;
   password: string;
-  needsPasswordChange: boolean;
+  needsPasswordChange?: boolean;
   passwordChangedAt?: Date;
 };
 

@@ -10,11 +10,7 @@ const UserSchema = new Schema<IUser, UserModel>(
       required: true,
       default: "user",
     },
-    firstName: {
-      type: String,
-      required: true,
-    },
-    lastName: {
+    fullName: {
       type: String,
       required: true,
     },
@@ -27,22 +23,15 @@ const UserSchema = new Schema<IUser, UserModel>(
       type: String,
       required: true,
     },
-    addressLine1: {
+    address: {
       type: String,
       required: true,
-    },
-    addressLine2: {
-      type: String,
     },
     zipCode: {
       type: String,
       required: true,
     },
     city: {
-      type: String,
-      required: true,
-    },
-    state: {
       type: String,
       required: true,
     },
