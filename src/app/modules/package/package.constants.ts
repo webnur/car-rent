@@ -1,12 +1,11 @@
+export const packageSearchableFields = ["name", "description", "features"];
 export const packageFilterableFields = [
   "searchTerm",
+  "name",
   "pickupLocation",
   "dropLocation",
   "car",
-  "basePrice",
-  "discountedPrice",
-  "startDate",
-  "endDate",
-  "available",
+  "minFare",
+  "maxFare",
   "features",
 ];

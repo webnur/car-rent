@@ -21,11 +21,12 @@ export interface IPackage {
 
 export interface IPackageFilters {
   searchTerm?: string;
+  name?: string;
   pickupLocation?: string;
   dropLocation?: string;
   car?: string;
-  fare?: number;
-  discountedFare?: number;
+  minFare?: number;
+  maxFare?: number;
   features?: string[];
 }
 

@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+const carPricingSchema = z.object({
+  car: z.string({
+    required_error: "Car ID is required",
+  }),
+  fare: z.number({
+    required_error: "Fare is required",
+  }),
+  discountedFare: z.number().optional(),
+});
+
 const createPackageZodSchema = z.object({
   body: z.object({
     name: z.string({
@@ -7,29 +17,18 @@ const createPackageZodSchema = z.object({
     }),
     description: z.string().optional(),
     pickupLocation: z.string({
-      required_error: "Pickup location is required",
+      required_error: "Pickup location ID is required",
     }),
     dropLocation: z.string({
-      required_error: "Drop location is required",
+      required_error: "Drop location ID is required",
     }),
-    car: z.string({
-      required_error: "Car is required",
+    carPricing: z.array(carPricingSchema, {
+      required_error: "At least one car pricing is required",
     }),
-    basePrice: z.number({
-      required_error: "Base price is required",
-    }),
-    discountedPrice: z.number().optional(),
-    startDate: z
-      .string({
-        required_error: "Start date is required",
-      })
-      .transform((str) => new Date(str)),
-    endDate: z
-      .string({
-        required_error: "End date is required",
-      })
-      .transform((str) => new Date(str)),
     features: z.array(z.string()).optional(),
+    createdBy: z.string({
+      required_error: "Creator ID is required",
+    }),
     image: z.string().optional(),
   }),
 });
@@ -40,18 +39,7 @@ const updatePackageZodSchema = z.object({
     description: z.string().optional(),
     pickupLocation: z.string().optional(),
     dropLocation: z.string().optional(),
-    car: z.string().optional(),
-    basePrice: z.number().optional(),
-    discountedPrice: z.number().optional(),
-    startDate: z
-      .string()
-      .optional()
-      .transform((str) => (str ? new Date(str) : undefined)),
-    endDate: z
-      .string()
-      .optional()
-      .transform((str) => (str ? new Date(str) : undefined)),
-    available: z.boolean().optional(),
+    carPricing: z.array(carPricingSchema).optional(),
     features: z.array(z.string()).optional(),
     image: z.string().optional(),
   }),

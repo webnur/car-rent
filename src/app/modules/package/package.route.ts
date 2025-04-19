@@ -1,10 +1,9 @@
 import express from "express";
+import auth from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { PackageController } from "./package.controller";
-
-import auth from "../../middlewares/auth";
-import { ENUM_USER_ROLE } from "../../../enum/user";
 import { PackageValidation } from "./package.validation";
+import { ENUM_USER_ROLE } from "../../../enum/user";
 
 const router = express.Router();
 
@@ -16,6 +15,7 @@ router.post(
 );
 
 router.get("/", PackageController.getAllPackages);
+
 router.get("/:id", PackageController.getPackageById);
 
 router.patch(
