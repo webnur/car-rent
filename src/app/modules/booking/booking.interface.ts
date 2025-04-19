@@ -6,7 +6,7 @@ export interface IBooking {
   pickupLocation: Types.ObjectId;
   dropLocation: Types.ObjectId;
   pickUpTime: Date;
-  dropOffTime: Date;
+  dropOffTime?: Date;
   totalAmount: number;
   paymentStatus: "pending" | "partial" | "paid" | "cancelled";
   paymentType: "full" | "partial" | "free";

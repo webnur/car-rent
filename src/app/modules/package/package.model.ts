@@ -3,10 +3,7 @@ import { IPackage, IPackageModel } from "./package.interface";
 
 const packageSchema = new Schema<IPackage, IPackageModel>(
   {
-    name: {
-      type: String,
-      required: true,
-    },
+    name: { type: String, required: true },
     description: String,
     pickupLocation: {
       type: Schema.Types.ObjectId,
@@ -18,34 +15,16 @@ const packageSchema = new Schema<IPackage, IPackageModel>(
       ref: "Location",
       required: true,
     },
-    car: {
-      type: Schema.Types.ObjectId,
-      ref: "Car",
-      required: true,
-    },
-    basePrice: {
-      type: Number,
-      required: true,
-    },
-    discountedPrice: Number,
-    startDate: {
-      type: Date,
-      required: true,
-    },
-    endDate: {
-      type: Date,
-      required: true,
-    },
-    available: {
-      type: Boolean,
-      default: true,
-    },
+    carPricing: [
+      {
+        car: { type: Schema.Types.ObjectId, ref: "Car", required: true },
+        fare: { type: Number, required: true },
+        discountedFare: Number,
+      },
+    ],
+
     features: [String],
-    createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     image: String,
   },
   {

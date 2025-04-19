@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent\\logs\\winston\\errors\\.9f453e374c650da1911f68314838fe6a9d50e173-audit.json",
+    "files": [
+        {
+            "date": 1745040801755,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent\\logs\\winston\\errors\\car-2025-19-04-11-error.log",
+            "hash": "e96c8575bb7b7abdc2f62ee980729c74eaa4dadc58d6b70e20718f905a461684"
+        }
+    ],
+    "hashType": "sha256"
+}
