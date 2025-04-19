@@ -21,10 +21,6 @@ export interface IBookingFilters {
   dropLocation?: Types.ObjectId;
   pickUpTime?: Date;
   dropOffTime?: Date;
-  startDate?: Date;
-  endDate?: Date;
-  totalDays?: number;
-  totalHours?: number;
   totalAmount?: number;
   paymentStatus?: "pending" | "partial" | "paid" | "cancelled";
   paymentType?: "full" | "partial" | "free";
