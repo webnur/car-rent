@@ -1,7 +1,11 @@
 import { z } from "zod";
+import { paymentStatus, paymentType } from "./booking.constants";
 
 const createBookingZodSchema = z.object({
   body: z.object({
+    user: z.string({
+      required_error: "User ID is required",
+    }),
     car: z.string({
       required_error: "Car ID is required",
     }),
@@ -11,16 +15,13 @@ const createBookingZodSchema = z.object({
     dropLocation: z.string({
       required_error: "Drop location ID is required",
     }),
-    startDate: z
-      .string({
-        required_error: "Start date is required",
-      })
-      .transform((str) => new Date(str)),
-    endDate: z
-      .string()
-      .optional()
-      .transform((str) => (str ? new Date(str) : undefined)),
-    paymentType: z.enum(["full", "partial", "free"], {
+    pickUpTime: z.string({
+      required_error: "Pickup time is required",
+    }),
+    dropOffTime: z.string({
+      required_error: "Dropoff time is required",
+    }),
+    paymentType: z.enum([...paymentType] as [string, ...string[]], {
       required_error: "Payment type is required",
     }),
     transactionId: z.string().optional(),
@@ -29,21 +30,17 @@ const createBookingZodSchema = z.object({
 
 const updateBookingZodSchema = z.object({
   body: z.object({
+    user: z.string().optional(),
     car: z.string().optional(),
     pickupLocation: z.string().optional(),
     dropLocation: z.string().optional(),
-    startDate: z
-      .string()
-      .optional()
-      .transform((str) => (str ? new Date(str) : undefined)),
-    endDate: z
-      .string()
-      .optional()
-      .transform((str) => (str ? new Date(str) : undefined)),
+    pickUpTime: z.string().optional(),
+    dropOffTime: z.string().optional(),
+    totalAmount: z.number().optional(),
     paymentStatus: z
-      .enum(["pending", "partial", "paid", "cancelled"])
+      .enum([...paymentStatus] as [string, ...string[]])
       .optional(),
-    paymentType: z.enum(["full", "partial", "free"]).optional(),
+    paymentType: z.enum([...paymentType] as [string, ...string[]]).optional(),
     amountPaid: z.number().optional(),
     transactionId: z.string().optional(),
   }),

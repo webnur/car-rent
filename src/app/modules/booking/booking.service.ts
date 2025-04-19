@@ -16,21 +16,17 @@ const createBooking = async (payload: IBooking): Promise<IBooking> => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Car is not available");
   }
 
-  // Calculate duration and amount
-  if (payload.startDate && payload.endDate) {
-    const hours =
-      (payload.endDate.getTime() - payload.startDate.getTime()) /
-      (1000 * 60 * 60);
-    const days = hours / 24;
+  // Calculate duration in hours
+  const durationInHours =
+    (payload.dropOffTime.getTime() - payload.pickUpTime.getTime()) /
+    (1000 * 60 * 60);
 
-    payload.totalHours = Math.ceil(hours);
-    payload.totalDays = Math.ceil(days);
-
-    if (days >= 1) {
-      payload.totalAmount = payload.totalDays * car.dailyRate;
-    } else {
-      payload.totalAmount = payload.totalHours * car.hourlyRate;
-    }
+  // Calculate total amount based on duration
+  if (durationInHours >= 24) {
+    const days = Math.ceil(durationInHours / 24);
+    payload.totalAmount = days * car.dailyRate;
+  } else {
+    payload.totalAmount = Math.ceil(durationInHours) * car.hourlyRate;
   }
 
   // Set payment amount based on payment type
@@ -134,26 +130,23 @@ const updateBooking = async (
   }
 
   // If updating dates, recalculate amount
-  if (payload.startDate || payload.endDate) {
+  if (payload.pickUpTime || payload.dropOffTime) {
     const booking = await Booking.findById(id);
     const car = await Car.findById(booking?.car);
 
     if (car && booking) {
-      const startDate = payload.startDate || booking.startDate;
-      const endDate = payload.endDate || booking.endDate;
+      const pickUpTime = payload.pickUpTime || booking.pickUpTime;
+      const dropOffTime = payload.dropOffTime || booking.dropOffTime;
 
-      if (startDate && endDate) {
-        const hours =
-          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60);
-        const days = hours / 24;
+      if (pickUpTime && dropOffTime) {
+        const durationInHours =
+          (dropOffTime.getTime() - pickUpTime.getTime()) / (1000 * 60 * 60);
 
-        payload.totalHours = Math.ceil(hours);
-        payload.totalDays = Math.ceil(days);
-
-        if (days >= 1) {
-          payload.totalAmount = payload.totalDays * car.dailyRate;
+        if (durationInHours >= 24) {
+          const days = Math.ceil(durationInHours / 24);
+          payload.totalAmount = days * car.dailyRate;
         } else {
-          payload.totalAmount = payload.totalHours * car.hourlyRate;
+          payload.totalAmount = Math.ceil(durationInHours) * car.hourlyRate;
         }
       }
     }

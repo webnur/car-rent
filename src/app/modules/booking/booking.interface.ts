@@ -5,10 +5,8 @@ export interface IBooking {
   car: Types.ObjectId;
   pickupLocation: Types.ObjectId;
   dropLocation: Types.ObjectId;
-  startDate: Date;
-  endDate?: Date;
-  totalDays?: number;
-  totalHours?: number;
+  pickUpTime: Date;
+  dropOffTime: Date;
   totalAmount: number;
   paymentStatus: "pending" | "partial" | "paid" | "cancelled";
   paymentType: "full" | "partial" | "free";
@@ -21,6 +19,8 @@ export interface IBookingFilters {
   car?: Types.ObjectId;
   pickupLocation?: Types.ObjectId;
   dropLocation?: Types.ObjectId;
+  pickUpTime?: Date;
+  dropOffTime?: Date;
   startDate?: Date;
   endDate?: Date;
   totalDays?: number;

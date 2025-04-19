@@ -1,18 +1,16 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { paginationFields } from "../../../constants/pagination";
 import catchAsync from "../../../shared/catchAsync";
+import pick from "../../../shared/pick";
 import sendResponse from "../../../shared/sendResponse";
 import { BookingService } from "./booking.service";
-import { IBooking } from "./booking.interface";
-import pick from "../../../shared/pick";
 import { bookingFilterableFields } from "./booking.constants";
-import { paginationFields } from "../../../constants/pagination";
+import { IBooking } from "./booking.interface";
 
 const createBooking = catchAsync(async (req: Request, res: Response) => {
-  const { ...bookingData } = req.body;
-  bookingData.user = req.user?._id; // Set the user who made the booking
-
-  const result = await BookingService.createBooking(bookingData);
+  const payload = req.body;
+  const result = await BookingService.createBooking(payload);
 
   sendResponse<IBooking>(res, {
     statusCode: httpStatus.OK,
@@ -41,7 +39,7 @@ const getAllBookings = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleBooking = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id;
   const result = await BookingService.getSingleBooking(id);
 
   sendResponse<IBooking>(res, {
@@ -53,9 +51,9 @@ const getSingleBooking = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateBooking = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const updatedData = req.body;
-  const result = await BookingService.updateBooking(id, updatedData);
+  const id = req.params.id;
+  const payload = req.body;
+  const result = await BookingService.updateBooking(id, payload);
 
   sendResponse<IBooking>(res, {
     statusCode: httpStatus.OK,
@@ -66,7 +64,7 @@ const updateBooking = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteBooking = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id;
   const result = await BookingService.deleteBooking(id);
 
   sendResponse<IBooking>(res, {
