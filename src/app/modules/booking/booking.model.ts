@@ -23,15 +23,14 @@ const bookingSchema = new Schema<IBooking, IBookingModel>(
       ref: "Location",
       required: true,
     },
-    startDate: {
+    pickUpTime: {
       type: Date,
       required: true,
     },
-    endDate: {
+    dropOffTime: {
       type: Date,
+      required: true,
     },
-    totalDays: Number,
-    totalHours: Number,
     totalAmount: {
       type: Number,
       required: true,

@@ -1,19 +1,22 @@
 import { Model, Types } from "mongoose";
 
+export interface ICarPricing {
+  car: Types.ObjectId;
+  fare: number;
+  discountedFare?: number;
+}
+
 export interface IPackage {
   name: string;
   description?: string;
   pickupLocation: Types.ObjectId;
   dropLocation: Types.ObjectId;
-  car: Types.ObjectId;
-  basePrice: number;
-  discountedPrice?: number;
-  startDate: Date;
-  endDate: Date;
-  available?: boolean;
+  carPricing: ICarPricing[];
   features?: string[];
   createdBy: Types.ObjectId;
   image?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IPackageFilters {
@@ -21,11 +24,8 @@ export interface IPackageFilters {
   pickupLocation?: string;
   dropLocation?: string;
   car?: string;
-  basePrice?: number;
-  discountedPrice?: number;
-  startDate?: Date;
-  endDate?: Date;
-  available?: boolean;
+  fare?: number;
+  discountedFare?: number;
   features?: string[];
 }
 
