@@ -14,6 +14,17 @@ router.post(
   PaymentController.createPayment
 );
 
+router.post(
+  "/stripe-webhook",
+  express.raw({ type: "application/json" }), // Important for signature verification
+  PaymentController.handleStripeWebhook
+);
+router.get(
+  "/verify/:paymentId",
+  auth(ENUM_USER_ROLE.USER),
+  PaymentController.verifyPayment
+);
+
 router.get("/", auth(ENUM_USER_ROLE.ADMIN), PaymentController.getAllPayments);
 
 router.get(

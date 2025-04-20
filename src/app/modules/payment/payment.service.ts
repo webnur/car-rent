@@ -9,17 +9,20 @@ import { SortOrder } from "mongoose";
 import { Order } from "../order/order.model";
 import { User } from "../users/user.model";
 import { paymentSearchableFields } from "./payment.constants";
+import { paymentGateway } from "../../../config/payment.config";
+import axios from "axios";
+import Stripe from "stripe";
 
 const createPayment = async (payload: IPayment): Promise<IPayment> => {
   // Validate order exists
-  const orderExists = await Order.findById(payload.order);
-  if (!orderExists) {
+  const order = await Order.findById(payload.order);
+  if (!order) {
     throw new ApiError(httpStatus.NOT_FOUND, "Order not found");
   }
 
   // Validate user exists
-  const userExists = await User.findById(payload.user);
-  if (!userExists) {
+  const user = await User.findById(payload.user);
+  if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
@@ -28,17 +31,39 @@ const createPayment = async (payload: IPayment): Promise<IPayment> => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid payment method");
   }
 
-  const createdPayment = await Payment.create(payload);
+  // Create payment record with pending status
+  const payment = await Payment.create({
+    ...payload,
+    status: "pending",
+  });
 
-  // Update order payment status
-  if (payload.status === "success") {
-    await Order.findByIdAndUpdate(payload.order, {
-      paymentStatus: "paid",
-      status: "confirmed",
+  try {
+    if (payload.paymentMethod === "stripe") {
+      return await processStripePayment(
+        {
+          ...payment.toObject(),
+          _id: String(payment._id),
+        } as unknown as IPayment & { _id: string },
+        order
+      );
+    } else {
+      return await processPaypalPayment(
+        {
+          ...payment.toObject(),
+          _id: String(payment._id),
+        } as unknown as IPayment & { _id: string },
+        order
+      );
+    }
+  } catch (error) {
+    // Update payment status if error occurs
+    await Payment.findByIdAndUpdate(payment._id, {
+      status: "failed",
+      paymentDetails:
+        error instanceof Error ? error.message : "An unknown error occurred",
     });
+    throw error;
   }
-
-  return createdPayment;
 };
 
 const getAllPayments = async (
@@ -175,6 +200,278 @@ const getUserPayments = async (
   };
 };
 
+const processStripePayment = async (
+  payment: IPayment & { _id: string },
+  order: any
+) => {
+  try {
+    // Create Stripe Checkout Session
+    const session = await paymentGateway.stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `Order #${order._id}`,
+              description: `Payment for ${order.package.name}`,
+            },
+            unit_amount: Math.round(order.totalAmount * 100), // Stripe uses cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.CLIENT_URL}/payment/success?paymentId=${payment._id}`,
+      cancel_url: `${process.env.CLIENT_URL}/payment/cancel?paymentId=${payment._id}`,
+      metadata: {
+        paymentId: payment._id.toString(),
+        orderId: order._id.toString(),
+      },
+    });
+
+    // Update payment with Stripe session ID
+    const updatedPayment = await Payment.findByIdAndUpdate(
+      payment._id,
+      {
+        transactionId: session.id,
+        paymentDetails: session,
+      },
+      { new: true }
+    )
+      .populate("order")
+      .populate("user");
+
+    return updatedPayment!;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    throw new ApiError(httpStatus.BAD_REQUEST, `Stripe error: ${errorMessage}`);
+  }
+};
+
+const processPaypalPayment = async (
+  payment: IPayment & { _id: string },
+  order: any
+) => {
+  try {
+    // Get PayPal access token
+    const auth = await axios.post(
+      `${process.env.PAYPAL_API_URL}/v1/oauth2/token`,
+      "grant_type=client_credentials",
+      {
+        auth: {
+          username: process.env.PAYPAL_CLIENT_ID!,
+          password: process.env.PAYPAL_SECRET!,
+        },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const accessToken = auth.data.access_token;
+
+    // Create PayPal order
+    const response = await axios.post(
+      `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
+      {
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "USD",
+              value: order.totalAmount.toString(),
+            },
+            description: `Payment for Order #${order._id}`,
+          },
+        ],
+        application_context: {
+          brand_name: "Your Company Name",
+          landing_page: "NO_PREFERENCE",
+          user_action: "PAY_NOW",
+          return_url: `${process.env.CLIENT_URL}/payment/success?paymentId=${payment._id}`,
+          cancel_url: `${process.env.CLIENT_URL}/payment/cancel?paymentId=${payment._id}`,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    const paypalOrder = response.data;
+
+    // Update payment with PayPal order ID
+    const updatedPayment = await Payment.findByIdAndUpdate(
+      payment._id,
+      {
+        transactionId: paypalOrder.id,
+        paymentDetails: paypalOrder,
+      },
+      { new: true }
+    )
+      .populate("order")
+      .populate("user");
+
+    return updatedPayment!;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    throw new ApiError(httpStatus.BAD_REQUEST, `PayPal error: ${errorMessage}`);
+  }
+};
+
+const verifyPayment = async (paymentId: string): Promise<IPayment> => {
+  const payment = await Payment.findById(paymentId)
+    .populate("order")
+    .populate("user");
+  if (!payment) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Payment not found");
+  }
+
+  if (payment.status === "success") {
+    return payment;
+  }
+
+  try {
+    if (payment.paymentMethod === "stripe") {
+      return await verifyStripePayment(payment);
+    } else {
+      return await verifyPaypalPayment(payment);
+    }
+  } catch (error) {
+    await Payment.findByIdAndUpdate(paymentId, {
+      status: "failed",
+      paymentDetails:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    });
+    throw error;
+  }
+};
+
+const verifyStripePayment = async (payment: IPayment) => {
+  const session = await paymentGateway.stripe.checkout.sessions.retrieve(
+    payment.transactionId!
+  );
+
+  if (session.payment_status === "paid") {
+    const updatedPayment = await Payment.findByIdAndUpdate(
+      payment._id,
+      {
+        status: "success",
+        paymentDetails: session,
+      },
+      { new: true }
+    )
+      .populate("order")
+      .populate("user");
+
+    // Update order status
+    await Order.findByIdAndUpdate(payment.order, {
+      paymentStatus: "paid",
+      status: "confirmed",
+    });
+
+    return updatedPayment!;
+  }
+
+  throw new ApiError(httpStatus.BAD_REQUEST, "Payment not completed");
+};
+
+const verifyPaypalPayment = async (payment: IPayment) => {
+  // Get PayPal access token
+  const auth = await axios.post(
+    `${process.env.PAYPAL_API_URL}/v1/oauth2/token`,
+    "grant_type=client_credentials",
+    {
+      auth: {
+        username: process.env.PAYPAL_CLIENT_ID!,
+        password: process.env.PAYPAL_SECRET!,
+      },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  const accessToken = auth.data.access_token;
+
+  // Get PayPal order details
+  const response = await axios.get(
+    `${process.env.PAYPAL_API_URL}/v2/checkout/orders/${payment.transactionId}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const paypalOrder = response.data;
+
+  if (paypalOrder.status === "COMPLETED") {
+    const updatedPayment = await Payment.findByIdAndUpdate(
+      payment._id,
+      {
+        status: "success",
+        paymentDetails: paypalOrder,
+      },
+      { new: true }
+    )
+      .populate("order")
+      .populate("user");
+
+    // Update order status
+    await Order.findByIdAndUpdate(payment.order, {
+      paymentStatus: "paid",
+      status: "confirmed",
+    });
+
+    return updatedPayment!;
+  }
+
+  throw new ApiError(httpStatus.BAD_REQUEST, "Payment not completed");
+};
+
+const handleStripeWebhook = async (payload: Buffer, sig: string) => {
+  let event: Stripe.Event;
+
+  try {
+    event = paymentGateway.stripe.webhooks.constructEvent(
+      payload,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+  } catch (err) {
+    // Proper type checking for the error
+    const errorMessage =
+      err instanceof Error ? err.message : "Unknown webhook error";
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Webhook Error: ${errorMessage}`
+    );
+  }
+
+  // Handle specific event types
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    // Safely access metadata with type guards
+    if (session.metadata && "paymentId" in session.metadata) {
+      const paymentId = session.metadata.paymentId;
+
+      if (paymentId) {
+        await verifyPayment(paymentId);
+      }
+    }
+  }
+
+  return { received: true };
+};
+
 export const PaymentService = {
   createPayment,
   getAllPayments,
@@ -182,4 +479,6 @@ export const PaymentService = {
   updatePayment,
   deletePayment,
   getUserPayments,
+  verifyPayment,
+  handleStripeWebhook,
 };

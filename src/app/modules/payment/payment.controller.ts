@@ -93,6 +93,32 @@ const getUserPayments = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const verifyPayment = catchAsync(async (req: Request, res: Response) => {
+  const { paymentId } = req.params;
+  const result = await PaymentService.verifyPayment(paymentId);
+
+  sendResponse<IPayment>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message:
+      result.status === "success"
+        ? "Payment verified successfully"
+        : "Payment verification failed",
+    data: result,
+  });
+});
+
+const handleStripeWebhook = catchAsync(async (req: Request, res: Response) => {
+  const sig = req.headers["stripe-signature"] as string;
+  const result = await PaymentService.handleStripeWebhook(req.body, sig);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Webhook handled successfully",
+    data: result,
+  });
+});
 export const PaymentController = {
   createPayment,
   getAllPayments,
@@ -100,4 +126,6 @@ export const PaymentController = {
   updatePayment,
   deletePayment,
   getUserPayments,
+  verifyPayment,
+  handleStripeWebhook,
 };
