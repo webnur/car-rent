@@ -8,7 +8,7 @@ import { ENUM_USER_ROLE } from "../../../enum/user";
 const router = express.Router();
 
 router.post(
-  "/",
+  "/create",
   auth(ENUM_USER_ROLE.ADMIN),
   validateRequest(CarValidation.createCarZodSchema),
   CarController.createCar
