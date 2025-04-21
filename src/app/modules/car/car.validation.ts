@@ -13,17 +13,9 @@ const createCarZodSchema = z.object({
         required_error: "Seats is required",
       })
       .min(2, "Minimum 2 seats required"),
-    dailyRate: z
-      .number({
-        required_error: "Daily rate is required",
-      })
-      .min(0, "Daily rate must be positive"),
-    hourlyRate: z
-      .number({
-        required_error: "Hourly rate is required",
-      })
-      .min(0, "Hourly rate must be positive"),
-    available: z.boolean().optional(),
+    bags: z.number({
+      required_error: "Bags is required",
+    }),
     image: z.string().optional(),
   }),
 });
@@ -33,9 +25,6 @@ const updateCarZodSchema = z.object({
     name: z.string().optional(),
     model: z.string().optional(),
     seats: z.number().min(2, "Minimum 2 seats required").optional(),
-    dailyRate: z.number().min(0, "Daily rate must be positive").optional(),
-    hourlyRate: z.number().min(0, "Hourly rate must be positive").optional(),
-    available: z.boolean().optional(),
     image: z.string().optional(),
   }),
 });

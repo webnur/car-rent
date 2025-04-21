@@ -24,7 +24,7 @@ const router = express.Router();
 // );
 
 router.post(
-  "/",
+  "/create",
   auth(ENUM_USER_ROLE.ADMIN),
   FileUploadHelper.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {

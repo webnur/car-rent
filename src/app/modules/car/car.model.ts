@@ -15,17 +15,9 @@ const carSchema = new Schema<ICar, ICarModel>(
       type: Number,
       required: true,
     },
-    dailyRate: {
+    bags: {
       type: Number,
       required: true,
-    },
-    hourlyRate: {
-      type: Number,
-      required: true,
-    },
-    available: {
-      type: Boolean,
-      default: true,
     },
     image: String,
   },
