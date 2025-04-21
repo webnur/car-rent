@@ -1,17 +1,38 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { CarController } from "./car.controller";
 import { CarValidation } from "./car.validation";
 import auth from "../../middlewares/auth";
 import { ENUM_USER_ROLE } from "../../../enum/user";
+import { FileUploadHelper } from "../../../helpers/FileUploadHelper";
 
 const router = express.Router();
+
+// router.post(
+//   "/",
+//   auth(ENUM_USER_ROLE.ADMIN),
+//   FileUploadHelper.upload.single("file"),
+
+//   // validateRequest(CarValidation.createCarZodSchema),
+//   // CarController.createCar
+//   (req: Request, res: Response, next: NextFunction) => {
+//     req.body = CarValidation.createCarZodSchema.parse(
+//       JSON.parse(req.body.data)
+//     );
+//     return CarController.createCar(req, res, next);
+//   }
+// );
 
 router.post(
   "/create",
   auth(ENUM_USER_ROLE.ADMIN),
-  validateRequest(CarValidation.createCarZodSchema),
-  CarController.createCar
+  FileUploadHelper.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = CarValidation.createCarZodSchema.parse(
+      JSON.parse(req.body.data)
+    );
+    return CarController.createCar(req, res, next);
+  }
 );
 
 router.get("/", CarController.getAllCars);
