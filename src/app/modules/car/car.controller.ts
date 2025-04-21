@@ -7,9 +7,32 @@ import { ICar } from "./car.interface";
 import pick from "../../../shared/pick";
 import { carFilterableFields } from "./car.constants";
 import { paginationFields } from "../../../constants/pagination";
+import { FileUploadHelper } from "../../../helpers/FileUploadHelper";
+
+// const createCar = catchAsync(async (req: Request, res: Response) => {
+//   const { ...carData } = req.body;
+//   const result = await CarService.createCar(carData);
+
+//   sendResponse<ICar>(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "Car created successfully",
+//     data: result,
+//   });
+// });
 
 const createCar = catchAsync(async (req: Request, res: Response) => {
   const { ...carData } = req.body;
+
+  if (req.file) {
+    const uploadedImage = await FileUploadHelper.uploadToCloudinary(req.file);
+
+    if (!uploadedImage) {
+      throw new Error("Failed to upload image to Cloudinary");
+    }
+    carData.image = uploadedImage?.secure_url;
+  }
+
   const result = await CarService.createCar(carData);
 
   sendResponse<ICar>(res, {
