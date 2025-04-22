@@ -5,6 +5,7 @@ export interface IBooking {
   car: Types.ObjectId;
   pickupLocation: Types.ObjectId;
   dropLocation: Types.ObjectId;
+  package: Types.ObjectId;
   pickUpTime: Date;
   dropOffTime?: Date;
   totalAmount: number;
@@ -19,6 +20,7 @@ export interface IBookingFilters {
   car?: Types.ObjectId;
   pickupLocation?: Types.ObjectId;
   dropLocation?: Types.ObjectId;
+  package?: Types.ObjectId;
   pickUpTime?: Date;
   dropOffTime?: Date;
   totalAmount?: number;

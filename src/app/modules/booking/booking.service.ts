@@ -2,48 +2,32 @@ import { IBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
 import ApiError from "../../../errors/ApiError";
 import httpStatus from "http-status";
-import { Car } from "../car/car.model";
 import { IPaginationOptions } from "../../../interfaces/pagination";
 import { IGenericResponse } from "../../../interfaces/common";
 import { paginationHelpers } from "../../../helpers/paginationHelper";
 import { SortOrder } from "mongoose";
-import { bookingSearchableFields } from "./booking.constants";
+import { User } from "../users/user.model";
+import { Car } from "../car/car.model";
+import { Package } from "../package/package.model";
 
-const createBooking = async (payload: IBooking): Promise<IBooking> => {
-  // Check car availability
-  const car = await Car.findById(payload.car);
-
-  // Calculate duration in hours
-  const durationInHours =
-    (payload.dropOffTime.getTime() - payload.pickUpTime.getTime()) /
-    (1000 * 60 * 60);
-
-  // Calculate total amount based on duration
-  if (durationInHours >= 24) {
-    const days = Math.ceil(durationInHours / 24);
-    payload.totalAmount = days * car.dailyRate;
-  } else {
-    payload.totalAmount = Math.ceil(durationInHours) * car.hourlyRate;
+const createBooking = async (bookingData: IBooking): Promise<IBooking> => {
+  const user = await User.findById(bookingData.user);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  const car = await Car.findById(bookingData.car);
+  if (!car) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Car not found");
   }
 
-  // Set payment amount based on payment type
-  if (payload.paymentType === "full") {
-    payload.amountPaid = payload.totalAmount;
-    payload.paymentStatus = "paid";
-  } else if (payload.paymentType === "partial") {
-    payload.amountPaid = payload.totalAmount * 0.2; // 20% payment
-    payload.paymentStatus = "partial";
-  } else {
-    payload.amountPaid = 0;
-    payload.paymentStatus = "pending";
+  const packageData = await Package.findById(bookingData.package);
+
+  if (!packageData) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Package not found");
   }
 
-  // Mark car as unavailable
-  car.available = false;
-  await car.save();
-
-  const booking = await Booking.create(payload);
-  return booking;
+  const result = await Booking.create(bookingData);
+  return result;
 };
 
 const getAllBookings = async (
@@ -58,7 +42,7 @@ const getAllBookings = async (
 
   if (searchTerm) {
     andConditions.push({
-      $or: bookingSearchableFields.map((field) => ({
+      $or: ["paymentStatus", "paymentType", "transactionId"].map((field) => ({
         [field]: {
           $regex: searchTerm,
           $options: "i",
@@ -110,7 +94,6 @@ const getSingleBooking = async (id: string): Promise<IBooking | null> => {
     .populate("car")
     .populate("pickupLocation")
     .populate("dropLocation");
-
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Booking not found");
   }
@@ -126,46 +109,58 @@ const updateBooking = async (
     throw new ApiError(httpStatus.NOT_FOUND, "Booking not found");
   }
 
-  // If updating dates, recalculate amount
-  if (payload.pickUpTime || payload.dropOffTime) {
-    const booking = await Booking.findById(id);
-    const car = await Car.findById(booking?.car);
-
-    if (car && booking) {
-      const pickUpTime = payload.pickUpTime || booking.pickUpTime;
-      const dropOffTime = payload.dropOffTime || booking.dropOffTime;
-
-      if (pickUpTime && dropOffTime) {
-        const durationInHours =
-          (dropOffTime.getTime() - pickUpTime.getTime()) / (1000 * 60 * 60);
-
-        if (durationInHours >= 24) {
-          const days = Math.ceil(durationInHours / 24);
-          payload.totalAmount = days * car.dailyRate;
-        } else {
-          payload.totalAmount = Math.ceil(durationInHours) * car.hourlyRate;
-        }
-      }
-    }
-  }
-
   const result = await Booking.findOneAndUpdate({ _id: id }, payload, {
     new: true,
-  });
+  })
+    .populate("user")
+    .populate("car")
+    .populate("pickupLocation")
+    .populate("dropLocation");
   return result;
 };
 
 const deleteBooking = async (id: string): Promise<IBooking | null> => {
-  const booking = await Booking.findById(id);
-  if (!booking) {
+  const result = await Booking.findByIdAndDelete(id)
+    .populate("user")
+    .populate("car")
+    .populate("pickupLocation")
+    .populate("dropLocation");
+  if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Booking not found");
   }
-
-  // Mark car as available again
-  await Car.findByIdAndUpdate(booking.car, { available: true });
-
-  const result = await Booking.findByIdAndDelete(id);
   return result;
+};
+
+const getUserBookings = async (
+  userId: string,
+  paginationOptions: IPaginationOptions
+): Promise<IGenericResponse<IBooking[]>> => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions);
+
+  const sortConditions: { [key: string]: SortOrder } = {};
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder;
+  }
+
+  const result = await Booking.find({ user: userId })
+    .populate("car")
+    .populate("pickupLocation")
+    .populate("dropLocation")
+    .sort(sortConditions)
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Booking.countDocuments({ user: userId });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };
 
 export const BookingService = {
@@ -174,4 +169,5 @@ export const BookingService = {
   getSingleBooking,
   updateBooking,
   deleteBooking,
+  getUserBookings,
 };

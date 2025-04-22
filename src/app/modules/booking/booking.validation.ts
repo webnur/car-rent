@@ -15,6 +15,9 @@ const createBookingZodSchema = z.object({
     dropLocation: z.string({
       required_error: "Drop location ID is required",
     }),
+    package: z.string({
+      required_error: "package is required",
+    }),
     pickUpTime: z.string({
       required_error: "Pickup time is required",
     }),
@@ -34,6 +37,7 @@ const updateBookingZodSchema = z.object({
     car: z.string().optional(),
     pickupLocation: z.string().optional(),
     dropLocation: z.string().optional(),
+    package: z.string().optional(),
     pickUpTime: z.string().optional(),
     dropOffTime: z.string().optional(),
     totalAmount: z.number().optional(),

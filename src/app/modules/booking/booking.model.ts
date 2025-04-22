@@ -23,6 +23,11 @@ const bookingSchema = new Schema<IBooking, IBookingModel>(
       ref: "Location",
       required: true,
     },
+    package: {
+      type: Schema.Types.ObjectId,
+      ref: "Package",
+      required: true,
+    },
     pickUpTime: {
       type: Date,
       required: true,
