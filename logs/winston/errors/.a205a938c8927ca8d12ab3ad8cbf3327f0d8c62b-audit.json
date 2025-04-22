@@ -54,6 +54,41 @@
             "date": 1745236800998,
             "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-21-04-18-error.log",
             "hash": "3786c2d77d8a646955c7aeda52b9944b2c673058d366c8041073a930154e667a"
+        },
+        {
+            "date": 1745253034849,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-21-04-22-error.log",
+            "hash": "a1faf284f93ca3c32c3ccbfdb4636681a928fca28d5e804b770e55590bea4233"
+        },
+        {
+            "date": 1745255009797,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-21-04-23-error.log",
+            "hash": "85c2892550fe54753c5f3bb6fdb710d9cb27e27989323179f8fefe0a7f3680aa"
+        },
+        {
+            "date": 1745258550417,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-22-04-00-error.log",
+            "hash": "a5e48b686dea198509c17ad756656fec93551cc20345b478de14816f024e9d7a"
+        },
+        {
+            "date": 1745262043777,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-22-04-01-error.log",
+            "hash": "a5a516d8f9674fc35a9257e521b0be368e1dad33d0886d650c251b33e3e92a36"
+        },
+        {
+            "date": 1745289402873,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-22-04-08-error.log",
+            "hash": "3af8108a263f351ca37151b9c51c12dbd40c93eca3a6089ae011f0fbd09ba209"
+        },
+        {
+            "date": 1745290847516,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-22-04-09-error.log",
+            "hash": "374b4472e64a2bcdc21822d2cfe27c444b552fec4514943173ed78e9f53556f2"
+        },
+        {
+            "date": 1745297270521,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\errors\\car-2025-22-04-10-error.log",
+            "hash": "57749351a0ea3caeb8ed80a71ca8c8b0ccd49b9e2baf918fa8ec11edb100efb1"
         }
     ],
     "hashType": "sha256"

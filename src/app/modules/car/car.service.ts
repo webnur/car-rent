@@ -24,7 +24,7 @@ const getAllCars = async (
 
   if (searchTerm) {
     andConditions.push({
-      $or: ["name", "model"].map((field) => ({
+      $or: ["name"].map((field) => ({
         [field]: {
           $regex: searchTerm,
           $options: "i",

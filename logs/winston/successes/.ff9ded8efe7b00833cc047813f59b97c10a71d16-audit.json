@@ -54,6 +54,41 @@
             "date": 1745236800993,
             "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-21-04-18-success.log",
             "hash": "0b67a0a77f86f29f92d3e49a06c46c4c0fca437aeb72ab285c6caa4248694c69"
+        },
+        {
+            "date": 1745253034844,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-21-04-22-success.log",
+            "hash": "a32129b6871e4f2430073885c32af2193b878e462c70292ab605a88f52e8768d"
+        },
+        {
+            "date": 1745255009793,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-21-04-23-success.log",
+            "hash": "d756c20f8afb88e473e79e987ae2a405fd50e538164e518a42b5ea7123354528"
+        },
+        {
+            "date": 1745258550413,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-22-04-00-success.log",
+            "hash": "7a2646760781f080097ffb720803833d383caab85bb886185de3154db192696d"
+        },
+        {
+            "date": 1745262043772,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-22-04-01-success.log",
+            "hash": "2123b3e0beb8e1b0eb1c021369a55b088abf9eff32913e65e11b3815b21eac15"
+        },
+        {
+            "date": 1745289402869,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-22-04-08-success.log",
+            "hash": "b97f2466b37717c81d0d23f58be7961d1389d548de3e6c969e7d54149fa42567"
+        },
+        {
+            "date": 1745290847512,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-22-04-09-success.log",
+            "hash": "52a029b6db6651ec73eb9611c8e4dc93c45501ebd58fe4d659c42214110c8fe0"
+        },
+        {
+            "date": 1745297270516,
+            "name": "C:\\Users\\Full-Stack-Development\\marceline-projects\\car-rent-server\\logs\\winston\\successes\\car-2025-22-04-10-success.log",
+            "hash": "3d9915bade805c79bd93df4d3a3fd01732fabad6747b1934555edcf71005cb5e"
         }
     ],
     "hashType": "sha256"

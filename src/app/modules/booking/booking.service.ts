@@ -12,9 +12,6 @@ import { bookingSearchableFields } from "./booking.constants";
 const createBooking = async (payload: IBooking): Promise<IBooking> => {
   // Check car availability
   const car = await Car.findById(payload.car);
-  if (!car || !car.available) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Car is not available");
-  }
 
   // Calculate duration in hours
   const durationInHours =

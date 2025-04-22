@@ -71,7 +71,7 @@ const getAllPackages = async (
     .populate("pickupLocation")
     .populate("dropLocation")
     .populate("carPricing.car")
-    .populate("createdBy")
+    // .populate("createdBy")
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
@@ -92,8 +92,8 @@ const getPackageById = async (id: string): Promise<IPackage | null> => {
   const result = await Package.findById(id)
     .populate("pickupLocation")
     .populate("dropLocation")
-    .populate("carPricing.car")
-    .populate("createdBy");
+    .populate("carPricing.car");
+  // .populate("createdBy");
 
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Package not found");
@@ -118,8 +118,8 @@ const updatePackage = async (
   const result = await Package.findByIdAndUpdate(id, payload, { new: true })
     .populate("pickupLocation")
     .populate("dropLocation")
-    .populate("carPricing.car")
-    .populate("createdBy");
+    .populate("carPricing.car");
+  // .populate("createdBy");
 
   return result;
 };

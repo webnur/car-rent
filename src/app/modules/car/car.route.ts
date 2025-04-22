@@ -28,9 +28,7 @@ router.post(
   auth(ENUM_USER_ROLE.ADMIN),
   FileUploadHelper.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
-    req.body = CarValidation.createCarZodSchema.parse(
-      JSON.parse(req.body.data)
-    );
+    // No Zod validation
     return CarController.createCar(req, res, next);
   }
 );
