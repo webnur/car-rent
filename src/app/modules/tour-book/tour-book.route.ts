@@ -13,14 +13,10 @@ router.post(
   TourBookController.createTourBook
 );
 
-router.get(
-  "/tour",
-  auth(ENUM_USER_ROLE.ADMIN),
-  TourBookController.getAllTourBooks
-);
+router.get("/", auth(ENUM_USER_ROLE.ADMIN), TourBookController.getAllTourBooks);
 
 router.get(
-  "/tour/:id",
+  "/:id",
   auth(ENUM_USER_ROLE.ADMIN),
   TourBookController.getSingleTourBook
 );
@@ -31,7 +27,7 @@ router.get(
 );
 
 router.patch(
-  "/tour/:id",
+  "/:id",
   auth(ENUM_USER_ROLE.ADMIN),
   validateRequest(TourBookValidation.updateTourBookZodSchema),
   TourBookController.updateTourBook
@@ -42,6 +38,6 @@ router.patch(
   TourBookController.updateTourBookStatus
 );
 
-router.delete("/tour/:id", TourBookController.deleteTourBook);
+router.delete("/:id", TourBookController.deleteTourBook);
 
 export const TourBookRoutes = router;
