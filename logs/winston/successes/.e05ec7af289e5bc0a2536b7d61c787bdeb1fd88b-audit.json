@@ -9,6 +9,11 @@
             "date": 1744449236145,
             "name": "C:\\projects\\rent-car\\logs\\winston\\successes\\car-2025-12-04-15-success.log",
             "hash": "4c19bd875539216b7801db934c7400451956b724b2ac78bdbc2363000ee96df2"
+        },
+        {
+            "date": 1745312783008,
+            "name": "C:\\projects\\rent-car\\logs\\winston\\successes\\car-2025-22-04-15-success.log",
+            "hash": "5de82cd696873d3335653c212778da35ee6956804d582998c66e4e3a7ab2feac"
         }
     ],
     "hashType": "sha256"
