@@ -3,8 +3,8 @@ import { IPackage, IPackageModel } from "./package.interface";
 
 const packageSchema = new Schema<IPackage, IPackageModel>(
   {
-    name: { type: String, required: true },
-    description: String,
+    // name: { type: String, required: true },
+    // description: String,
     pickupLocation: {
       type: Schema.Types.ObjectId,
       ref: "Location",
@@ -19,13 +19,13 @@ const packageSchema = new Schema<IPackage, IPackageModel>(
       {
         car: { type: Schema.Types.ObjectId, ref: "Car", required: true },
         fare: { type: Number, required: true },
-        discountedFare: Number,
+        // discountedFare: Number,
       },
     ],
 
-    features: [String],
-    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    image: String,
+    // features: [String],
+    // createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    // image: String,
   },
   {
     timestamps: true,

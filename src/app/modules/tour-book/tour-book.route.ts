@@ -2,28 +2,39 @@ import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { TourBookValidation } from "./tour-book.validation";
 import { TourBookController } from "./tour-book.controller";
+import auth from "../../middlewares/auth";
+import { ENUM_USER_ROLE } from "../../../enum/user";
 
 const router = express.Router();
 
 router.post(
   "/",
-  validateRequest(TourBookValidation.createTourBookZodSchema),
+  // validateRequest(TourBookValidation.createTourBookZodSchema),
   TourBookController.createTourBook
 );
 
-router.get("/", TourBookController.getAllTourBooks);
+router.get("/", auth(ENUM_USER_ROLE.ADMIN), TourBookController.getAllTourBooks);
 
-router.get("/:id", TourBookController.getSingleTourBook);
-router.get("/status/:status", TourBookController.getTourBooksByStatus);
+router.get(
+  "/:id",
+  auth(ENUM_USER_ROLE.ADMIN),
+  TourBookController.getSingleTourBook
+);
+router.get(
+  "/status/:status",
+  auth(ENUM_USER_ROLE.ADMIN),
+  TourBookController.getTourBooksByStatus
+);
 
 router.patch(
   "/:id",
+  auth(ENUM_USER_ROLE.ADMIN),
   validateRequest(TourBookValidation.updateTourBookZodSchema),
   TourBookController.updateTourBook
 );
 router.patch(
   "/:id/status",
-  // auth(ENUM_USER_ROLE.ADMIN),
+  auth(ENUM_USER_ROLE.ADMIN),
   TourBookController.updateTourBookStatus
 );
 
